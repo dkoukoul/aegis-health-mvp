@@ -12,15 +12,25 @@ import { v4 as uuidv4 } from 'uuid';
  * medications, and health records.
  */
 
-const WS_URL = process.env.PUBLIC_SYNC_SERVER_URL || 'ws://localhost:1234';
+const WS_URL = process.env.PUBLIC_SYNC_SERVER_URL || 'ws://127.0.0.1:1234';
 const ROOM_NAME = 'aegis-health';
 
 const doc = new Y.Doc();
 const wsProvider = new WebsocketProvider(WS_URL, ROOM_NAME, doc, { connect: true });
 
+// Connection timeout to prevent infinite "connecting" loops
+const connectionTimeout = setTimeout(() => {
+  if (!wsProvider.shouldConnect || wsProvider.wsconnected === false) {
+    console.error(`[Error] Could not connect to sync server at ${WS_URL} after 5 seconds.`);
+    console.error('Make sure you have started the server with: npm run sync:server');
+    process.exit(1);
+  }
+}, 5000);
+
 wsProvider.on('status', (event: any) => {
   console.log(`[Seed] Connection status: ${event.status}`);
   if (event.status === 'connected') {
+    clearTimeout(connectionTimeout);
     startSeeding();
   }
 });
