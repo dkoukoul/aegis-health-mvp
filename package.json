@@ -11,7 +11,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"sync:server": "npx -y y-websocket",
-		"seed": "bun scripts/seed.ts"
+		"seed": "bun scripts/seed.ts",
+		"create-user": "bun scripts/create-user.ts"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^7.0.0",
