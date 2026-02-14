@@ -10,7 +10,7 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"sync:server": "HOST=127.0.0.1 npx -y y-websocket",
+		"sync:server": "HOST=127.0.0.1 PORT=1234 npx y-websocket-server",
 		"seed": "bun scripts/seed.ts",
 		"create-user": "bun scripts/create-user.ts"
 	},
@@ -28,7 +28,7 @@
 	"dependencies": {
 		"uuid": "^13.0.0",
 		"y-indexeddb": "^9.0.12",
-		"y-websocket": "^3.0.0",
+		"y-websocket": "^1.11.0",
 		"yjs": "^13.6.29"
 	}
 }
