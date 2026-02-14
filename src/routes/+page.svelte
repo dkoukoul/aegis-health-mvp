@@ -2,6 +2,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { appointmentUseCases, patientUseCases } from '$lib/services';
+  import { t } from '$lib/i18n';
   import type { Appointment, Patient } from '$core';
 
   let todaysAppointments = $state<Appointment[]>([]);
@@ -23,7 +24,7 @@
 </script>
 
 <div class="dashboard">
-  <h1 class="page-title">Dashboard</h1>
+  <h1 class="page-title">{t('dashboard')}</h1>
 
   <!-- Stats cards -->
   <div class="stats-grid">
@@ -31,7 +32,7 @@
       <div class="stat-icon">👥</div>
       <div class="stat-content">
         <span class="stat-value">{totalPatients}</span>
-        <span class="stat-label">Patients</span>
+        <span class="stat-label">{t('patients')}</span>
       </div>
     </div>
     <div class="stat-card">
@@ -45,7 +46,7 @@
       <div class="stat-icon">📋</div>
       <div class="stat-content">
         <span class="stat-value">{totalAppointments}</span>
-        <span class="stat-label">Total Appointments</span>
+        <span class="stat-label">{t('total_appointments')}</span>
       </div>
     </div>
   </div>
@@ -53,9 +54,9 @@
   <div class="dashboard-grid">
     <!-- Today's appointments -->
     <section class="card">
-      <h2 class="card-title">📅 Today's Appointments</h2>
+      <h2 class="card-title">📅 {t('todays_appointments')}</h2>
       {#if todaysAppointments.length === 0}
-        <p class="empty-state">No appointments today</p>
+        <p class="empty-state">{t('no_appointments_today')}</p>
       {:else}
         <ul class="appointment-list">
           {#each todaysAppointments as appt}
@@ -73,9 +74,9 @@
 
     <!-- Recent patients -->
     <section class="card">
-      <h2 class="card-title">👥 Recent Patients</h2>
+      <h2 class="card-title">👥 {t('recent_patients')}</h2>
       {#if recentPatients.length === 0}
-        <p class="empty-state">No patients yet — <a href="/patients">add your first patient</a></p>
+        <p class="empty-state">{t('no_patients_yet')} — <a href="/patients">{t('add_first_patient')}</a></p>
       {:else}
         <ul class="patient-list">
           {#each recentPatients as patient}
@@ -89,7 +90,7 @@
             </li>
           {/each}
         </ul>
-        <a href="/patients" class="view-all-link">View all patients →</a>
+        <a href="/patients" class="view-all-link">{t('view_all_patients')} →</a>
       {/if}
     </section>
   </div>
@@ -104,10 +105,7 @@
     font-size: 1.75rem;
     font-weight: 700;
     margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, #e4e4e7, #a1a1aa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--text-main);
   }
 
   /* Stats grid */
@@ -119,8 +117,8 @@
   }
 
   .stat-card {
-    background: linear-gradient(135deg, #1e1e24, #27272a);
-    border: 1px solid #2d2d35;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
     border-radius: 12px;
     padding: 1.25rem;
     display: flex;
@@ -130,7 +128,7 @@
   }
 
   .stat-card:hover {
-    border-color: #6366f1;
+    border-color: var(--accent);
   }
 
   .stat-icon {
@@ -140,14 +138,14 @@
   .stat-value {
     font-size: 2rem;
     font-weight: 700;
-    color: #f4f4f5;
+    color: var(--text-main);
     display: block;
     line-height: 1;
   }
 
   .stat-label {
     font-size: 0.8rem;
-    color: #71717a;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -161,8 +159,8 @@
 
   /* Card */
   .card {
-    background: #18181b;
-    border: 1px solid #27272a;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
     border-radius: 12px;
     padding: 1.5rem;
   }
@@ -170,20 +168,20 @@
   .card-title {
     font-size: 1rem;
     font-weight: 600;
-    color: #d4d4d8;
+    color: var(--text-main);
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid #27272a;
+    border-bottom: 1px solid var(--border);
   }
 
   .empty-state {
-    color: #71717a;
+    color: var(--text-muted);
     font-size: 0.9rem;
     padding: 1rem 0;
   }
 
   .empty-state a {
-    color: #818cf8;
+    color: var(--accent);
     text-decoration: underline;
   }
 
@@ -200,13 +198,14 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem 0.75rem;
-    background: #1e1e24;
+    background: var(--bg-input);
     border-radius: 8px;
+    color: var(--text-main); /* Ensure text is visible */
   }
 
   .appt-time {
     font-weight: 600;
-    color: #a5b4fc;
+    color: var(--nav-active-text); /* Use accent or nav active text */
     font-size: 0.85rem;
     min-width: 50px;
   }
@@ -226,6 +225,10 @@
   .status-scheduled { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
   .status-completed { background: rgba(34, 197, 94, 0.15); color: #86efac; }
   .status-cancelled { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+  
+  /* Adjust status colors for light mode if needed, but these might work okay or need variables. 
+     For now, I will keep them as is or try to use vars if available. 
+     The layout variables define --danger but not success. */
 
   /* Patient list */
   .patient-list {
@@ -242,10 +245,11 @@
     padding: 0.5rem 0.75rem;
     border-radius: 8px;
     transition: background 0.2s;
+    color: var(--text-main);
   }
 
   .patient-link:hover {
-    background: #1e1e24;
+    background: var(--bg-input);
   }
 
   .patient-name {
@@ -255,7 +259,7 @@
 
   .patient-amka {
     font-size: 0.75rem;
-    color: #71717a;
+    color: var(--text-muted);
   }
 
   .view-all-link {
@@ -263,13 +267,13 @@
     text-align: center;
     padding: 0.75rem;
     margin-top: 0.5rem;
-    color: #818cf8;
+    color: var(--accent);
     font-size: 0.85rem;
     border-radius: 8px;
     transition: background 0.2s;
   }
 
   .view-all-link:hover {
-    background: #1e1e24;
+    background: var(--bg-input);
   }
 </style>

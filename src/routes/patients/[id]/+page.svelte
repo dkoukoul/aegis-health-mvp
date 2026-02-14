@@ -8,6 +8,7 @@
     medicationUseCases,
     healthRecordUseCases,
   } from '$lib/services';
+  import { t } from '$lib/i18n';
   import { AppointmentStatus, HealthRecordType, type Patient, type Appointment, type Medication, type HealthRecord } from '$core';
 
   let patient = $state<Patient | null>(null);
@@ -110,36 +111,36 @@
   }
 
   function deleteAppointment(id: string) {
-    if (confirm('Delete this appointment?')) { appointmentUseCases.delete(id); load(); }
+    if (confirm(t('confirm_delete_appt'))) { appointmentUseCases.delete(id); load(); }
   }
   function deleteMedication(id: string) {
-    if (confirm('Delete this medication?')) { medicationUseCases.delete(id); load(); }
+    if (confirm(t('confirm_delete_med'))) { medicationUseCases.delete(id); load(); }
   }
   function deleteRecord(id: string) {
-    if (confirm('Delete this record?')) { healthRecordUseCases.delete(id); load(); }
+    if (confirm(t('confirm_delete_record'))) { healthRecordUseCases.delete(id); load(); }
   }
 </script>
 
-{#if !patient}
-  <div class="empty-state"><p>Patient not found</p><a href="/patients">← Back to patients</a></div>
-{:else}
-  <div class="detail-page">
-    <div class="page-header">
-      <a href="/patients" class="back-link">← Back</a>
-      <h1 class="page-title">{patient.fullName}</h1>
-      {#if patient.amka}<span class="amka-badge">ΑΜΚΑ: {patient.amka}</span>{/if}
-    </div>
-
-    {#if error}<div class="error-msg">{error}</div>{/if}
-
-    <!-- Tabs -->
-    <div class="tabs">
-      {#each [
-        { key: 'info', label: 'Info', icon: '📋' },
-        { key: 'appointments', label: 'Appointments', icon: '📅' },
-        { key: 'medications', label: 'Medications', icon: '💊' },
-        { key: 'records', label: 'Records', icon: '🏥' },
-      ] as tab}
+    {#if !patient}
+      <div class="empty-state"><p>{t('patient_not_found')}</p><a href="/patients">← {t('back_to_patients')}</a></div>
+    {:else}
+      <div class="detail-page">
+        <div class="page-header">
+          <a href="/patients" class="back-link">← {t('back')}</a>
+          <h1 class="page-title">{patient.fullName}</h1>
+          {#if patient.amka}<span class="amka-badge">{t('amka')}: {patient.amka}</span>{/if}
+        </div>
+    
+        {#if error}<div class="error-msg">{error}</div>{/if}
+    
+        <!-- Tabs -->
+        <div class="tabs">
+          {#each [
+            { key: 'info', label: t('tab_info'), icon: '📋' },
+            { key: 'appointments', label: t('tab_appointments'), icon: '📅' },
+            { key: 'medications', label: t('tab_medications'), icon: '💊' },
+            { key: 'records', label: t('tab_records'), icon: '🏥' },
+          ] as tab}
         <button
           class="tab" class:active={activeTab === tab.key}
           onclick={() => activeTab = tab.key as typeof activeTab}
@@ -152,20 +153,19 @@
       {/each}
     </div>
 
-    <!-- Tab: Info -->
     {#if activeTab === 'info'}
       <div class="card">
         <div class="card-header">
-          <h2>Patient Information</h2>
-          <button class="btn btn-sm" onclick={() => editing = !editing}>{editing ? 'Cancel' : 'Edit'}</button>
+          <h2>{t('patient_info')}</h2>
+          <button class="btn btn-sm" onclick={() => editing = !editing}>{editing ? t('cancel') : t('edit')}</button>
         </div>
         <div class="info-grid">
           {#each [
-            ['First Name', 'firstName'], ['Last Name', 'lastName'], ['Father\'s Name', 'fatherName'],
-            ['ΑΜΚΑ', 'amka'], ['ΑΦΜ', 'afm'], ['Date of Birth', 'dateOfBirth'],
-            ['Gender', 'gender'], ['Phone', 'phone'], ['Email', 'email'],
-            ['Insurance', 'insuranceProvider'], ['Insurance #', 'insuranceNumber'],
-            ['Address', 'address'], ['City', 'city'], ['Postal Code', 'postalCode'],
+            [t('first_name'), 'firstName'], [t('last_name'), 'lastName'], [t('fathers_name'), 'fatherName'],
+            [t('amka'), 'amka'], [t('afm'), 'afm'], [t('dob'), 'dateOfBirth'],
+            [t('gender'), 'gender'], [t('phone'), 'phone'], [t('email'), 'email'],
+            [t('insurance_provider'), 'insuranceProvider'], [t('insurance_number'), 'insuranceNumber'],
+            [t('address'), 'address'], [t('city'), 'city'], [t('postal_code'), 'postalCode'],
           ] as [label, field]}
             <div class="info-item">
               <span class="info-label">{label}</span>
@@ -179,7 +179,7 @@
         </div>
         {#if editing}
           <div class="form-actions">
-            <button class="btn btn-primary" onclick={savePatient}>Save Changes</button>
+            <button class="btn btn-primary" onclick={savePatient}>{t('save_changes')}</button>
           </div>
         {/if}
       </div>
@@ -188,26 +188,26 @@
     {:else if activeTab === 'appointments'}
       <div class="card">
         <div class="card-header">
-          <h2>Appointments</h2>
+          <h2>{t('tab_appointments')}</h2>
           <button class="btn btn-sm btn-primary" onclick={() => showApptForm = !showApptForm}>
-            {showApptForm ? 'Cancel' : '+ Add'}
+            {showApptForm ? t('cancel') : '+ ' + t('add')}
           </button>
         </div>
         {#if showApptForm}
           <form class="inline-form" onsubmit={(e) => { e.preventDefault(); createAppointment(); }}>
-            <input placeholder="Title" bind:value={apptForm.title} required />
+            <input placeholder={t('title')} bind:value={apptForm.title} required />
             <input type="datetime-local" bind:value={apptForm.dateTime} required />
-            <input type="number" placeholder="Minutes" bind:value={apptForm.duration} min="5" />
+            <input type="number" placeholder={t('minutes')} bind:value={apptForm.duration} min="5" />
             <select bind:value={apptForm.status}>
-              <option value="scheduled">Scheduled</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="scheduled">{t('scheduled')}</option>
+              <option value="completed">{t('completed')}</option>
+              <option value="cancelled">{t('cancelled')}</option>
             </select>
-            <button type="submit" class="btn btn-primary btn-sm">Create</button>
+            <button type="submit" class="btn btn-primary btn-sm">{t('add')}</button>
           </form>
         {/if}
         {#if appointments.length === 0}
-          <p class="empty-text">No appointments</p>
+          <p class="empty-text">{t('no_appointments')}</p>
         {:else}
           {#each appointments as appt}
             <div class="list-item">
@@ -215,10 +215,10 @@
                 <strong>{appt.title}</strong>
                 <span class="list-meta">
                   {new Date(appt.dateTime).toLocaleDateString('el-GR')} {new Date(appt.dateTime).toLocaleTimeString('el-GR', {hour:'2-digit',minute:'2-digit'})}
-                  · {appt.duration} min
+                  · {appt.duration} {t('minutes')}
                 </span>
               </div>
-              <span class="status-pill status-{appt.status}">{appt.status}</span>
+              <span class="status-pill status-{appt.status}">{t(appt.status as any)}</span>
               <button class="btn btn-sm btn-danger" onclick={() => deleteAppointment(appt.id)}>✕</button>
             </div>
           {/each}
@@ -229,32 +229,32 @@
     {:else if activeTab === 'medications'}
       <div class="card">
         <div class="card-header">
-          <h2>Medications</h2>
+          <h2>{t('tab_medications')}</h2>
           <button class="btn btn-sm btn-primary" onclick={() => showMedForm = !showMedForm}>
-            {showMedForm ? 'Cancel' : '+ Add'}
+            {showMedForm ? t('cancel') : '+ ' + t('add')}
           </button>
         </div>
         {#if showMedForm}
           <form class="inline-form" onsubmit={(e) => { e.preventDefault(); createMedication(); }}>
-            <input placeholder="Drug name" bind:value={medForm.name} required />
-            <input placeholder="Dosage" bind:value={medForm.dosage} required />
-            <input placeholder="Frequency" bind:value={medForm.frequency} />
+            <input placeholder={t('drug_name')} bind:value={medForm.name} required />
+            <input placeholder={t('dosage')} bind:value={medForm.dosage} required />
+            <input placeholder={t('frequency')} bind:value={medForm.frequency} />
             <input type="date" bind:value={medForm.startDate} required />
-            <input placeholder="Prescribed by" bind:value={medForm.prescribedBy} />
-            <button type="submit" class="btn btn-primary btn-sm">Create</button>
+            <input placeholder={t('prescribed_by')} bind:value={medForm.prescribedBy} />
+            <button type="submit" class="btn btn-primary btn-sm">{t('add')}</button>
           </form>
         {/if}
         {#if medications.length === 0}
-          <p class="empty-text">No medications</p>
+          <p class="empty-text">{t('no_medications')}</p>
         {:else}
           {#each medications as med}
             <div class="list-item">
               <div class="list-main">
                 <strong>{med.name}</strong> — {med.dosage}
-                <span class="list-meta">{med.frequency} · Since {med.startDate}</span>
+                <span class="list-meta">{med.frequency} · {t('start_date')}: {med.startDate}</span>
               </div>
               <span class="status-pill" class:active-med={med.isActive} class:inactive-med={!med.isActive}>
-                {med.isActive ? 'Active' : 'Ended'}
+                {med.isActive ? t('active') : t('ended')}
               </span>
               <button class="btn btn-sm btn-danger" onclick={() => deleteMedication(med.id)}>✕</button>
             </div>
@@ -266,34 +266,34 @@
     {:else if activeTab === 'records'}
       <div class="card">
         <div class="card-header">
-          <h2>Health Records</h2>
+          <h2>{t('tab_records')}</h2>
           <button class="btn btn-sm btn-primary" onclick={() => showRecordForm = !showRecordForm}>
-            {showRecordForm ? 'Cancel' : '+ Add'}
+            {showRecordForm ? t('cancel') : '+ ' + t('add')}
           </button>
         </div>
         {#if showRecordForm}
           <form class="inline-form" onsubmit={(e) => { e.preventDefault(); createRecord(); }}>
             <select bind:value={recordForm.type}>
-              <option value="diagnosis">Diagnosis</option>
-              <option value="lab-result">Lab Result</option>
-              <option value="note">Note</option>
-              <option value="procedure">Procedure</option>
-              <option value="referral">Referral</option>
+              <option value="diagnosis">{t('diagnosis')}</option>
+              <option value="lab-result">{t('lab_result')}</option>
+              <option value="note">{t('note')}</option>
+              <option value="procedure">{t('procedure')}</option>
+              <option value="referral">{t('referral')}</option>
             </select>
-            <input placeholder="Title" bind:value={recordForm.title} required />
+            <input placeholder={t('title')} bind:value={recordForm.title} required />
             <input type="date" bind:value={recordForm.date} required />
-            <button type="submit" class="btn btn-primary btn-sm">Create</button>
+            <button type="submit" class="btn btn-primary btn-sm">{t('add')}</button>
           </form>
-          <textarea class="record-desc" placeholder="Description..." bind:value={recordForm.description} rows="3"></textarea>
+          <textarea class="record-desc" placeholder={t('description') + '...'} bind:value={recordForm.description} rows="3"></textarea>
         {/if}
         {#if records.length === 0}
-          <p class="empty-text">No health records</p>
+          <p class="empty-text">{t('no_records')}</p>
         {:else}
           {#each records as rec}
             <div class="list-item">
               <div class="list-main">
                 <strong>{rec.title}</strong>
-                <span class="list-meta">{rec.type} · {rec.date}</span>
+                <span class="list-meta">{t(rec.type.replace('-', '_') as any)} · {rec.date}</span>
                 {#if rec.description}<p class="record-preview">{rec.description.slice(0, 120)}{rec.description.length > 120 ? '…' : ''}</p>{/if}
               </div>
               <button class="btn btn-sm btn-danger" onclick={() => deleteRecord(rec.id)}>✕</button>

@@ -6,6 +6,7 @@
   import { initAuth, auth, logout } from '$lib/auth.svelte';
   import { initSettings, settings, toggleTheme, setLanguage } from '$lib/settings.svelte';
   import { initAdminTools } from '$lib/admin';
+  import { t } from '$lib/i18n';
   import { initializeSync, syncState } from '$lib/sync.svelte';
   import { goto } from '$app/navigation';
   import type { Snippet } from 'svelte';
@@ -31,10 +32,10 @@
   });
 
   const navItems = $derived([
-    { href: '/', label: settings.language === 'el' ? 'Πίνακας Ελέγχου' : 'Dashboard', icon: '📊' },
-    { href: '/patients', label: settings.language === 'el' ? 'Ασθενείς' : 'Patients', icon: '👥' },
-    { href: '/calendar', label: settings.language === 'el' ? 'Ημερολόγιο' : 'Calendar', icon: '📅' },
-    { href: '/settings', label: settings.language === 'el' ? 'Ρυθμίσεις' : 'Settings', icon: '⚙️' },
+    { href: '/', label: t('dashboard'), icon: '📊' },
+    { href: '/patients', label: t('patients'), icon: '👥' },
+    { href: '/calendar', label: t('calendar'), icon: '📅' },
+    { href: '/settings', label: t('settings'), icon: '⚙️' },
   ]);
 
   function isActive(href: string, currentPath: string): boolean {
@@ -54,7 +55,7 @@
 {#if !ready}
   <div class="loading-screen">
     <div class="loading-spinner"></div>
-    <p>Loading Aegis Health…</p>
+    <p>{t('loading')}</p>
   </div>
 {:else}
   <div class="app" class:sidebar-collapsed={!sidebarOpen}>
@@ -94,7 +95,7 @@
             {#if sidebarOpen}
               <div class="user-info">
                 <span class="username">{auth.user.name}</span>
-                <button class="logout-btn" onclick={() => { logout(); goto('/login'); }}>Log out</button>
+                <button class="logout-btn" onclick={() => { logout(); goto('/login'); }}>{t('logout')}</button>
               </div>
             {/if}
           </div>
@@ -109,8 +110,8 @@
           ></span>
           {#if sidebarOpen}
             <span class="sync-label">
-              {syncState.status === 'connected' ? 'Synced' : 
-               syncState.status === 'connecting' ? 'Connecting...' : 'Offline'}
+              {syncState.status === 'connected' ? t('synced') : 
+               syncState.status === 'connecting' ? t('connecting') : t('offline')}
             </span>
           {/if}
         </div>

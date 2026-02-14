@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { auth, login, register, getAllUsers } from '$lib/auth.svelte';
   import { goto } from '$app/navigation';
+  import { t } from '$lib/i18n';
   import type { User } from '$core';
 
   let users = $state<User[]>([]);
@@ -33,11 +34,11 @@
       if (success) {
         goto('/');
       } else {
-        loginError = 'Incorrect PIN';
+        loginError = t('incorrect_pin');
         pin = '';
       }
     } catch (e) {
-      loginError = 'Login failed';
+      loginError = t('login_failed');
     }
   }
 
@@ -60,7 +61,7 @@
 
     <!-- User Selection View -->
     {#if !showRegister && !selectedUser}
-      <h2 class="subtitle">Select User</h2>
+      <h2 class="subtitle">{t('select_user')}</h2>
       <div class="user-grid">
         {#each users as user}
           <button class="user-card" onclick={() => selectUser(user)}>
@@ -73,8 +74,8 @@
         
         {#if users.length === 0}
           <div class="empty-users">
-            <p>No users found.</p>
-            <small>Run admin script to create user.</small>
+            <p>{t('no_users_found')}</p>
+            <small>{t('run_admin_script')}</small>
           </div>
         {/if}
       </div>
@@ -89,7 +90,7 @@
           <h3>{selectedUser.name}</h3>
         </div>
         
-        <p class="instruction">Enter PIN to unlock</p>
+        <p class="instruction">{t('enter_pin')}</p>
         
         <form onsubmit={(e) => { e.preventDefault(); handleLogin(); }}>
           <input 
@@ -105,8 +106,8 @@
           {/if}
           
           <div class="actions">
-            <button type="button" class="btn btn-ghost" onclick={() => selectedUser = null}>Back</button>
-            <button type="submit" class="btn btn-primary" disabled={!pin}>Unlock</button>
+            <button type="button" class="btn btn-ghost" onclick={() => selectedUser = null}>{t('back')}</button>
+            <button type="submit" class="btn btn-primary" disabled={!pin}>{t('unlock')}</button>
           </div>
         </form>
       </div>

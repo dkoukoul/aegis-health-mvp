@@ -124,17 +124,17 @@
   .calendar-page { max-width: 1100px; }
 
   .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-  .page-title { font-size: 1.75rem; font-weight: 700; background: linear-gradient(135deg, #e4e4e7, #a1a1aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .page-title { font-size: 1.75rem; font-weight: 700; color: var(--text-main); }
 
   .calendar-nav { display: flex; align-items: center; gap: 0.5rem; }
-  .month-label { font-size: 1rem; font-weight: 600; color: #d4d4d8; min-width: 160px; text-align: center; }
+  .month-label { font-size: 1rem; font-weight: 600; color: var(--text-main); min-width: 160px; text-align: center; }
 
   /* Grid */
   .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    background: #18181b;
-    border: 1px solid #27272a;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
     border-radius: 12px;
     overflow: hidden;
   }
@@ -144,32 +144,34 @@
     text-align: center;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #71717a;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 1px solid #27272a;
+    border-bottom: 1px solid var(--border);
   }
 
   .day-cell {
     min-height: 100px;
     padding: 0.5rem;
-    border-bottom: 1px solid #1e1e24;
-    border-right: 1px solid #1e1e24;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    position: relative;
+    background: var(--bg-card);
   }
 
   .day-cell:nth-child(7n + 7) { border-right: none; }
 
-  .day-cell.other-month { opacity: 0.3; }
+  .day-cell.other-month { opacity: 0.3; background: var(--bg-main); }
 
   .day-cell.today {
-    background: rgba(99, 102, 241, 0.05);
+    background: var(--accent-glow);
   }
 
   .day-cell.today .day-number {
-    background: #6366f1;
+    background: var(--accent);
     color: white;
     border-radius: 50%;
     width: 24px;
@@ -182,7 +184,7 @@
   .day-number {
     font-size: 0.8rem;
     font-weight: 500;
-    color: #a1a1aa;
+    color: var(--text-muted);
     margin-bottom: 0.15rem;
   }
 
@@ -210,8 +212,8 @@
 
   /* Buttons */
   .btn { padding: 0.5rem 1rem; border-radius: 8px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 500; font-family: inherit; transition: all 0.2s; }
-  .btn-ghost { background: transparent; color: #a1a1aa; border: 1px solid #27272a; }
-  .btn-ghost:hover { background: #27272a; color: #e4e4e7; }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg-input); color: var(--text-main); }
 
   @media (max-width: 768px) {
     .day-cell { min-height: 60px; padding: 0.25rem; }

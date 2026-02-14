@@ -1,18 +1,19 @@
 <script lang="ts">
   import { seedDatabase } from '$lib/seed';
   import { settings, toggleTheme, setLanguage } from '$lib/settings.svelte';
+  import { t } from '$lib/i18n';
 </script>
 
 <div class="settings-page">
-  <h1 class="page-title">Settings</h1>
+  <h1 class="page-title">{t('settings')}</h1>
 
   <section class="card">
-    <h2 class="card-title">Appearance & Language</h2>
+    <h2 class="card-title">{t('appearance_language')}</h2>
     
     <div class="setting-row">
-      <div class="setting-label">Theme</div>
+      <div class="setting-label">{t('theme')}</div>
       <button class="btn btn-ghost" onclick={toggleTheme}>
-        {settings.theme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+        {settings.theme === 'dark' ? '🌙 ' + t('dark_mode') : '☀️ ' + t('light_mode')}
       </button>
     </div>
 
@@ -32,30 +33,30 @@
   </section>
 
   <section class="card">
-    <h2 class="card-title">Data & Sync</h2>
+    <h2 class="card-title">{t('data_sync')}</h2>
     <div class="setting-row">
       <div class="sync-info">
         <span class="sync-dot online"></span>
-        <span>Data stored locally in your browser (IndexedDB)</span>
+        <span>{t('data_stored_local')}</span>
       </div>
     </div>
-    <p class="setting-note">Cross-device sync via WebSocket relay will be available in Phase 2.</p>
+    <p class="setting-note">{t('sync_coming_soon')}</p>
   </section>
 
   <section class="card">
-    <h2 class="card-title">Data Management</h2>
+    <h2 class="card-title">{t('data_management')}</h2>
     <div class="setting-row">
-      <button class="btn btn-primary" onclick={seedDatabase}>🌱 Seed Fake Data (20 Patients)</button>
+      <div class="setting-label">{t('seed_fake_data')}</div>
+      <button class="btn btn-primary" onclick={seedDatabase}>Seed</button>
     </div>
-    <p class="setting-note">This will add random dummy patients and appointments for testing.</p>
+    <p class="setting-note">{t('seed_note')}</p>
   </section>
 
   <section class="card">
-    <h2 class="card-title">About</h2>
-    <p class="about-text">
-      <strong>Aegis Health</strong> v0.1.0 (MVP)<br />
-      A local-first health management app for Greek medical practices.<br />
-      No data is stored in the cloud. Your data stays on your device.
+    <h2 class="card-title">{t('about')}</h2>
+    <p class="about-text" style="white-space: pre-line;">
+      <strong>Aegis Health</strong> v0.1.0 (MVP)
+      {t('app_description')}
     </p>
   </section>
 </div>
