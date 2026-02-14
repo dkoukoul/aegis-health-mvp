@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
  * medications, and health records.
  */
 
-const WS_URL = 'ws://localhost:1234';
+const WS_URL = process.env.PUBLIC_SYNC_SERVER_URL || 'ws://localhost:1234';
 const ROOM_NAME = 'aegis-health';
 
 const doc = new Y.Doc();
@@ -25,9 +25,9 @@ wsProvider.on('status', (event: any) => {
   }
 });
 
-const GREEK_MALE_KEY_NAMES = ['Giorgos', 'Dimitris', 'Giannis', 'Nikos', 'Kostas', 'Panagiotis', 'Vasilis', 'Christos', 'Thanasis', 'Michalis'];
-const GREEK_FEMALE_KEY_NAMES = ['Maria', 'Eleni', 'Katerina', 'Dimitra', 'Sofia', 'Georgia', 'Anastasia', 'Evangelia', 'Ioanna', 'Christina'];
-const GREEK_LAST_NAMES = ['Papadopoulos', 'Vlachos', 'Georgiou', 'Oikonomou', 'Dimitriou', 'Makris', 'Papageorgiou', 'Konstantinou', 'Dimopoulos', 'Nikolaou', 'Karagiannis', 'Papas'];
+const GREEK_MALE_KEY_NAMES = ['Γιώργος', 'Δημήτρης', 'Γιάννης', 'Νίκος', 'Κώστας', 'Παναγιώτης', 'Βασίλης', 'Χρήστος', 'Θανάσης', 'Μιχάλης'];
+const GREEK_FEMALE_KEY_NAMES = ['Μαρία', 'Ελένη', 'Κατερίνα', 'Δήμητρα', 'Σοφία', 'Γεωργία', 'Αναστασία', 'Ευαγγελία', 'Ιωάννα', 'Χριστίνα'];
+const GREEK_LAST_NAMES = ['Παπαδόπουλος', 'Βλάχος', 'Γεωργίου', 'Οικονόμου', 'Δημητρίου', 'Μακρής', 'Παπαγεωργίου', 'Κωνσταντίνου', 'Δημόπουλος', 'Νικολάου', 'Καραγιάννης', 'Παππάς'];
 
 const MEDICATION_NAMES = ['Metformin', 'Amoxicillin', 'Lipitor', 'Aspirin', 'Nexium', 'Ventolin', 'Paracetamol', 'Ibuprofen', 'Zoloft', 'Xanax'];
 const DOSAGES = ['500mg', '1g', '10mg', '100mg', '20mg', '40mg', '5mg', '2.5mg'];
@@ -59,6 +59,17 @@ function randomDate(start: Date, end: Date): string {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString();
 }
 
+/**
+ * Very basic transliteration for dummy emails
+ */
+function transliterate(text: string): string {
+  const map: Record<string, string> = {
+    'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'i', 'θ': 'th', 'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm', 'ν': 'n', 'ξ': 'x', 'ο': 'o', 'π': 'p', 'ρ': 'r', 'σ': 's', 'ς': 's', 'τ': 't', 'υ': 'y', 'φ': 'f', 'χ': 'ch', 'ψ': 'ps', 'ω': 'o',
+    'ά': 'a', 'έ': 'e', 'ή': 'i', 'ί': 'i', 'ό': 'o', 'ύ': 'y', 'ώ': 'o', 'ϊ': 'i', 'ϋ': 'y', 'ΐ': 'i', 'ΰ': 'y'
+  };
+  return text.toLowerCase().split('').map(char => map[char] || char).join('');
+}
+
 async function startSeeding() {
   console.log('[Seed] Starting data generation...');
 
@@ -77,7 +88,12 @@ async function startSeeding() {
     const lastName = randomElement(GREEK_LAST_NAMES);
     
     let finalLastName = lastName;
-    if (!isMale && lastName.endsWith('os')) finalLastName = lastName.slice(0, -2) + 'ou';
+    // Basic Greek female last name inflection
+    if (!isMale) {
+      if (lastName.endsWith('ος')) finalLastName = lastName.slice(0, -2) + 'ου';
+      else if (lastName.endsWith('ης')) finalLastName = lastName.slice(0, -2) + 'η';
+      else if (lastName.endsWith('ας')) finalLastName = lastName.slice(0, -1); // Παππάς -> Παππά
+    }
 
     const pMap = new Y.Map<string>();
     const patientData = {
@@ -90,13 +106,13 @@ async function startSeeding() {
       dateOfBirth: randomDate(new Date(1950, 0, 1), new Date(2000, 0, 1)).split('T')[0],
       gender: isMale ? 'male' : 'female',
       phone: '69' + randomDigits(8),
-      email: `${firstName.toLowerCase()}.${finalLastName.toLowerCase()}@example.com`,
-      address: 'Generated St 123',
-      city: 'Athens',
+      email: `${transliterate(firstName)}.${transliterate(finalLastName)}@dummy-health.gr`,
+      address: 'Διεύθυνση 123',
+      city: 'Αθήνα',
       postalCode: '10000',
-      insuranceProvider: 'EOPYY',
+      insuranceProvider: 'ΕΟΠΥΥ',
       insuranceNumber: randomDigits(10),
-      notes: 'Seed script patient',
+      notes: 'Στοιχεία από script προσομοίωσης',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString()
     };

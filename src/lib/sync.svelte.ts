@@ -1,4 +1,5 @@
 import { initSync } from '$infra/yjs/yjs-provider';
+import { PUBLIC_SYNC_SERVER_URL } from '$env/static/public';
 
 export const syncState = $state({
   status: 'offline' as 'connected' | 'disconnected' | 'connecting' | 'offline',
@@ -6,9 +7,7 @@ export const syncState = $state({
 });
 
 export function initializeSync() {
-  // Default to localhost for development
-  // In production, this would be an environment variable
-  const SYNC_SERVER_URL = 'ws://localhost:1234';
+  const SYNC_SERVER_URL = PUBLIC_SYNC_SERVER_URL || 'ws://localhost:1234';
 
   initSync(SYNC_SERVER_URL, (status) => {
     syncState.status = status;
