@@ -1,22 +1,34 @@
-<!-- Settings Page -->
 <script lang="ts">
-  let language = $state('en');
+  import { seedDatabase } from '$lib/seed';
+  import { settings, toggleTheme, setLanguage } from '$lib/settings.svelte';
 </script>
 
 <div class="settings-page">
   <h1 class="page-title">Settings</h1>
 
   <section class="card">
-    <h2 class="card-title">Language / Γλώσσα</h2>
+    <h2 class="card-title">Appearance & Language</h2>
+    
     <div class="setting-row">
-      <label>
-        <input type="radio" bind:group={language} value="en" /> English 🇬🇧
-      </label>
-      <label>
-        <input type="radio" bind:group={language} value="el" /> Ελληνικά 🇬🇷
-      </label>
+      <div class="setting-label">Theme</div>
+      <button class="btn btn-ghost" onclick={toggleTheme}>
+        {settings.theme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+      </button>
     </div>
-    <p class="setting-note">i18n support coming in the next update.</p>
+
+    <div class="setting-row">
+      <div class="setting-label">Language / Γλώσσα</div>
+      <div class="radio-group">
+        <label class="radio-label">
+          <input type="radio" name="lang" value="en" checked={settings.language === 'en'} onchange={() => setLanguage('en')} />
+          English 🇬🇧
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="lang" value="el" checked={settings.language === 'el'} onchange={() => setLanguage('el')} />
+          Ελληνικά 🇬🇷
+        </label>
+      </div>
+    </div>
   </section>
 
   <section class="card">
@@ -28,6 +40,14 @@
       </div>
     </div>
     <p class="setting-note">Cross-device sync via WebSocket relay will be available in Phase 2.</p>
+  </section>
+
+  <section class="card">
+    <h2 class="card-title">Data Management</h2>
+    <div class="setting-row">
+      <button class="btn btn-primary" onclick={seedDatabase}>🌱 Seed Fake Data (20 Patients)</button>
+    </div>
+    <p class="setting-note">This will add random dummy patients and appointments for testing.</p>
   </section>
 
   <section class="card">
@@ -49,16 +69,26 @@
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
 
-  .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
-  .card-title { font-size: 1rem; font-weight: 600; color: #d4d4d8; margin-bottom: 1rem; }
-
-  .setting-row { display: flex; gap: 1.5rem; align-items: center; }
-  .setting-row label { display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: #d4d4d8; font-size: 0.9rem; }
-  .setting-note { font-size: 0.8rem; color: #52525b; margin-top: 0.75rem; }
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .card-title { font-size: 1.1rem; font-weight: 600; color: var(--text-main); margin-bottom: 1rem; }
+  
+  .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .setting-label { font-size: 0.95rem; color: var(--text-main); font-weight: 500; }
+  
+  .radio-group { display: flex; gap: 1rem; }
+  .radio-label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; }
+  .radio-label input { accent-color: var(--accent); }
+  
+  .setting-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; }
+  .about-text { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
 
   .sync-info { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #d4d4d8; }
   .sync-dot { width: 8px; height: 8px; border-radius: 50%; }
   .sync-dot.online { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.4); }
 
-  .about-text { font-size: 0.85rem; color: #a1a1aa; line-height: 1.6; }
+  .btn { padding: 0.5rem 1rem; border-radius: 8px; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+  .btn-ghost:hover { background: var(--bg-main); }
 </style>
