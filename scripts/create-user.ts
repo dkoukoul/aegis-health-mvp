@@ -53,7 +53,7 @@ async function createUser() {
   const userData = {
     id: userId,
     name: name,
-    pin: pin, // Hash this in production! Currently plain for MVP
+    pin: pin,
     color: getRandomColor(),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -65,11 +65,14 @@ async function createUser() {
 
   usersMap.set(userId, userYMap);
 
-  console.log(`[Admin] Successfully created user ${name} (ID: ${userId}) with PIN: ${pin}`);
-  console.log('[Admin] Waiting for sync...');
+  console.log(`[Admin] Successfully created user ${name} (ID: ${userId})`);
+  console.log('[Admin] Ensuring data is synced to server...');
 
-  setTimeout(() => {
-    console.log('[Admin] Done. Exiting.');
-    process.exit(0);
-  }, 2000);
+  // Wait for the provider to confirm all updates are sent
+  wsProvider.on('sync', (isSynced: boolean) => {
+    if (isSynced) {
+      console.log('[Admin] ✅ Data synced successfully. Exiting.');
+      setTimeout(() => process.exit(0), 500);
+    }
+  });
 }
