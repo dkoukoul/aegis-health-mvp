@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { seedDatabase } from '$lib/seed';
   import { settings, toggleTheme, setLanguage } from '$lib/settings.svelte';
   import { t } from '$lib/i18n';
 </script>
@@ -41,15 +40,6 @@
       </div>
     </div>
     <p class="setting-note">{t('sync_coming_soon')}</p>
-  </section>
-
-  <section class="card">
-    <h2 class="card-title">{t('data_management')}</h2>
-    <div class="setting-row">
-      <div class="setting-label">{t('seed_fake_data')}</div>
-      <button class="btn btn-primary" onclick={seedDatabase}>Seed</button>
-    </div>
-    <p class="setting-note">{t('seed_note')}</p>
   </section>
 
   <section class="card">

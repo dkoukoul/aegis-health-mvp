@@ -118,9 +118,6 @@ const translations = {
     data_sync: "Data & Sync",
     data_stored_local: "Data stored locally in your browser (IndexedDB)",
     sync_coming_soon: "Cross-device sync via WebSocket relay will be available in Phase 2.",
-    data_management: "Data Management",
-    seed_fake_data: "Seed Fake Data (20 Patients)",
-    seed_note: "This will add random dummy patients and appointments for testing.",
     about: "About",
     app_description: "A local-first health management app for Greek medical practices.\nNo data is stored in the cloud. Your data stays on your device.",
     
@@ -244,9 +241,6 @@ const translations = {
     data_sync: "Δεδομένα & Συγχρονισμός",
     data_stored_local: "Τα δεδομένα αποθηκεύονται τοπικά στον browser (IndexedDB)",
     sync_coming_soon: "Ο συγχρονισμός μεταξύ συσκευών θα είναι διαθέσιμος στη Φάση 2.",
-    data_management: "Διαχείριση Δεδομένων",
-    seed_fake_data: "Εισαγωγή Δείγματος (20 Ασθενείς)",
-    seed_note: "Αυτό θα προσθέσει τυχαίους ασθενείς και ραντεβού για έλεγχο.",
     about: "Σχετικά",
     app_description: "Μια εφαρμογή διαχείρισης ιατρείου με προτεραιότητα την ιδιωτικότητα.\nΤα δεδομένα δεν αποθηκεύονται στο cloud, αλλά στη συσκευή σας.",
 
