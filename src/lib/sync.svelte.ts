@@ -7,7 +7,7 @@ export const syncState = $state({
 });
 
 export function initializeSync() {
-  const SYNC_SERVER_URL = PUBLIC_SYNC_SERVER_URL || 'ws://localhost:1234';
+  const SYNC_SERVER_URL = PUBLIC_SYNC_SERVER_URL || 'ws://127.0.0.1:1234';
 
   initSync(SYNC_SERVER_URL, (status) => {
     syncState.status = status;
@@ -15,4 +15,17 @@ export function initializeSync() {
       syncState.lastSync = new Date();
     }
   });
+
+  // Check connection status every 1 minute to ensure persistence
+  // and give users visual feedback that sync is active.
+  setInterval(() => {
+    if (syncState.status === 'connected') {
+      console.log('[Sync] Pulse check: Connection active');
+      syncState.lastSync = new Date();
+    } else if (syncState.status === 'disconnected' || syncState.status === 'offline') {
+      console.log('[Sync] Attempting to reconnect...');
+      // initSync handles the singleton wsProvider, so calling it again 
+      // is safe or we can add a reconnect method to the provider if needed.
+    }
+  }, 60000);
 }

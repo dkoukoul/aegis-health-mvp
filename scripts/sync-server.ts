@@ -1,14 +1,18 @@
 
+import * as Y from 'yjs';
+import * as sync from 'y-protocols/dist/sync.cjs';
+import * as awareness from 'y-protocols/dist/awareness.cjs';
+import * as encoding from 'lib0/dist/encoding.cjs';
+import * as decoding from 'lib0/dist/decoding.cjs';
+
 /**
- * AEGIS HEALTH - Native Bun Sync Server
- * Use this to sync data across devices.
- * Run with: bun scripts/sync-server.ts
+ * AEGIS HEALTH - Stateful Bun Sync Server
+ * This version stores the document in memory so data survives 
+ * between different client connections.
  */
 
 const port = process.env.PORT || 1234;
-
-// Track connected clients per "room"
-const rooms = new Map<string, Set<any>>();
+const docs = new Map<string, Y.Doc>();
 
 const server = Bun.serve({
   port: port,
@@ -24,33 +28,51 @@ const server = Bun.serve({
   websocket: {
     open(ws) {
       const { roomName } = ws.data as { roomName: string };
-      if (!rooms.has(roomName)) {
-        rooms.set(roomName, new Set());
+      console.log(`[Sync] Client connected to: ${roomName}`);
+      
+      if (!docs.has(roomName)) {
+        docs.set(roomName, new Y.Doc());
       }
-      rooms.get(roomName)!.add(ws);
-      console.log(`[Sync] Client joined room: ${roomName} (Total: ${rooms.get(roomName)!.size})`);
+      const doc = docs.get(roomName)!;
+
+      // 1. Send Sync Step 1 (Our state vector)
+      const encoder = encoding.createEncoder();
+      encoding.writeUint8(encoder, 0); // messageSync
+      sync.writeSyncStep1(encoder, doc);
+      ws.send(encoding.toUint8Array(encoder));
     },
     message(ws, message) {
       const { roomName } = ws.data as { roomName: string };
-      const clients = rooms.get(roomName);
+      const doc = docs.get(roomName)!;
       
-      if (clients) {
-        // Relay the binary Yjs message to everyone EXCEPT the sender
-        for (const client of clients) {
-          if (client !== ws) {
-            client.send(message);
-          }
+      const decoder = decoding.createDecoder(new Uint8Array(message as ArrayBuffer));
+      const messageType = decoding.readUint8(decoder);
+      
+      if (messageType === 0) { // messageSync
+        const encoder = encoding.createEncoder();
+        encoding.writeUint8(encoder, 0);
+        const syncMessageType = sync.readSyncMessage(decoder, encoder, doc, ws);
+        
+        // If there's a reply to send back to the requester
+        if (encoding.length(encoder) > 1) {
+          ws.send(encoding.toUint8Array(encoder));
+        }
+
+        // 2. Broadcast updates to other clients
+        if (syncMessageType === 2) { // update
+          // The update is already applied to our local 'doc' in-memory
+          // We could broadcast to others here, but for simplicity in this MVP 
+          // we just follow the Yjs protocol logic.
+          server.publish(roomName, message);
         }
       }
+      
+      // Allow relaying for non-sync messages
+      ws.subscribe(roomName);
     },
     close(ws) {
       const { roomName } = ws.data as { roomName: string };
-      const clients = rooms.get(roomName);
-      if (clients) {
-        clients.delete(ws);
-        console.log(`[Sync] Client left room: ${roomName}`);
-        if (clients.size === 0) rooms.delete(roomName);
-      }
+      console.log(`[Sync] Client disconnected from: ${roomName}`);
     }
   }
 });

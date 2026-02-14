@@ -109,10 +109,17 @@
             class:offline={syncState.status === 'disconnected' || syncState.status === 'offline'}
           ></span>
           {#if sidebarOpen}
-            <span class="sync-label">
-              {syncState.status === 'connected' ? t('synced') : 
-               syncState.status === 'connecting' ? t('connecting') : t('offline')}
-            </span>
+            <div class="sync-info">
+              <span class="sync-label">
+                {syncState.status === 'connected' ? t('synced') : 
+                 syncState.status === 'connecting' ? t('connecting') : t('offline')}
+              </span>
+              {#if syncState.lastSync}
+                <span class="last-sync-time">
+                  {syncState.lastSync.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              {/if}
+            </div>
           {/if}
         </div>
       </div>
@@ -283,11 +290,13 @@
   .logout-btn:hover { text-decoration: underline; }
 
   .sync-status { display: flex; align-items: center; gap: 0.5rem; padding-left: 0.5rem; }
+  .sync-info { display: flex; flex-direction: column; gap: 0; }
   .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); box-shadow: none; transition: all 0.3s; }
   .sync-dot.online { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.4); }
   .sync-dot.connecting { background: #eab308; box-shadow: 0 0 8px rgba(234,179,8,0.4); }
   .sync-dot.offline { background: var(--danger); box-shadow: 0 0 8px var(--danger-bg); }
   .sync-label { font-size: 0.75rem; color: var(--text-muted); }
+  .last-sync-time { font-size: 0.65rem; color: var(--text-muted); opacity: 0.7; }
   
   .mobile-menu-btn { display: none; margin-bottom: 1rem; background: none; border: none; font-size: 1.5rem; color: var(--text-main); }
 
